@@ -5,6 +5,6 @@ title: "Peter's Blog"
 
 <img src="images/profile_picture.jpg" style="width:25%; border:10px solid; margin-right: 20px" align="left">
 
-I graduated from the [University of Colorado](https://www.colorado.edu/ebio/) with a BA in Ecology and Evolutionary Biology in 2014. In 2019 I began working toward my MESM Economics and Politics of the Environment [The Bren School For Environmental Science and Management](http://www.bren.ucsb.edu/)
+I graduated from the [University of Colorado](https://www.colorado.edu/ebio/) with a BA in Ecology and Evolutionary Biology in 2014. In 2019 I began working toward my MESM Economics and Politics of the Environment [The Bren School For Environmental Science and Management](http://www.bren.ucsb.edu/). My two foci at the Bren School are Environmental Data Science and Science Communication. I look forward to a future career in impact investing and pursuing hobbies related to science communication. 
 
 My full CV is available [here](files/Omasta_Resume.pdf).

@@ -22,10 +22,10 @@ library(forecast)
 ### **Introduction:** 
 This data was provided by the Columbia Basin Research DART, which is affiliated with the University of Washington [1]. The data set goes back to 1939 and shows the daily record of the number of steelhead salmon that have passed through the Bonneville Dam which was built across the Columbia River that seperates Oregon and Washington. The Bonneville Dam has a fish ladder that was constructed in 1937 which has helped facilitate migration of steelhead salmon and other salmon species back to their spawning grounds. [2]
 
-![Source: Lyn Topinka, 2005.](bonneville_dam.jpg)
+<img src="images/bonneville_dam.jpg" style="width:75%; margin-right: 20px" align="left">
 
 ```{r, include=FALSE}
-salmon_data <- read_csv("cbr_fish_passage_bonneville_allyrs_steelhead.csv") %>% 
+salmon_data <- read_csv(here::here("data","cbr_fish_passage_bonneville_allyrs_steelhead.csv")) %>% 
   janitor::clean_names()
 ```
 

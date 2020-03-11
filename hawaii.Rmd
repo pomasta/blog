@@ -1,46 +1,29 @@
 ---
-<<<<<<< HEAD
 title: "Hawaiian Land Use and Watershed Maps"
 author: "Peter Omasta"
-=======
-title: "Part3"
-author: "Me"
->>>>>>> 4d2fd8610485bbd558a6ac8a00b0c9eed954317b
 date: "2/19/2020"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-<<<<<<< HEAD
 knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
                       warning = FALSE)
 #attach necessary packages
-library(sf)
-library(tmap)
 library(tmaptools)
-=======
-knitr::opts_chunk$set(echo = TRUE,
-                      message = FALSE,
-                      warning = FALSE)
 library(sf)
 library(tmap)
->>>>>>> 4d2fd8610485bbd558a6ac8a00b0c9eed954317b
 library(mapview)
 library(tidyverse)
 library(janitor)
 library(lubridate)
 library(here)
-<<<<<<< HEAD
 library(shinyjs)
-=======
->>>>>>> 4d2fd8610485bbd558a6ac8a00b0c9eed954317b
 library(paletteer)
 ```
 
 ### **Part 3** 
 
-<<<<<<< HEAD
 This will be creating a map which shows he different land use and covers for the Hawaiian islands. It also displays the different watersheds for all of the Hawaiian islands as well. The data was collected by the Hawaii Statewide GIS Program.
 
 ```{r, include = FALSE}
@@ -163,4 +146,3 @@ land_use <- read_sf(dsn = here::here("data"), layer ="Land_Use_Land_Cover_LULC")
 water_sheds <- read_sf(dsn = here::here("data"), layer="Watersheds")
 ```
 
->>>>>>> 4d2fd8610485bbd558a6ac8a00b0c9eed954317b

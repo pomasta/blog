@@ -27,12 +27,12 @@ library(knitr)
 
 This data set was created by @zander_venter and was acquired through the Google Earth Engine [1], it is a data set that examines various environmental and climactic variables on a country level. For this analysis, we are looking specifically at the data related to cropland cover and climatic variables related to weather (namely precipitaion and temperature). In order to find which variables were associated with the amount of cropland that was present in a country, a primary component analysis was conducted. 
 
-![Source: Vladyslav Danilin.](rice_farm.jpg){width=800px}
+<img src="images/rice_farm.jpg" style="width:75%; ; margin-right: 20px" align="left">
 
 ```{r, include = FALSE}
 #starting off with loading in the necessary data frames 
 
-world_env <- read_csv("world_env_vars.csv") %>% 
+world_env <- read_csv(here::here("data","world_env_vars.csv")) %>% 
   clean_names()
 
 #remove antarctica which has all NA values 

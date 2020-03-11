@@ -28,15 +28,16 @@ library(knitr)
 The data was collected from 1998 - 2012 at the Bonanza Creek Experimental Forest inside of the Bonanza Creek LTER just outside Fairbanks, Alaska [3]. Snowshoe hares (*Lepus americanus*) are a well documented species that observe a 10 year cycle of population growth and decline [1,2]. This data set will examine to see whether this population of snowshoe hares in the Bonanza Creek LTER also observe a similar 10 year trend. We will explore the weight of both male and females inside of the population to see if there are trends that overlap with the ten year cycle of reproduction. 
 
 #### **Part 2: Images**
-![Source: Denali National Park and Preserve.](hare.png){width=500px}
 
-![Source: University of Alaska Fairbanks.](bonanza.png){width=500px}
+<img src="images/hare.png" style="width:75%; margin-right: 20px" align="left">
+
+<img src="images/bonanza.png" style="width:75%; margin-right: 20px" align="left">
 
 
 ```{r, include = FALSE}
 #Will start be reading in the necessary data files, which is the snowshoe_lter.csv file
 
-hares <- read_csv("showshoe_lter.csv")
+hares <- read_csv(here::here("data","showshoe_lter.csv"))
 
 #going to select variables that I am interested in, size of right ear, weight, sex, age, and length of the hindfoot 
 
