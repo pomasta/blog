@@ -1,9 +1,10 @@
 ---
-title: "My Website"
+title: "Peter's Blog"
 ---
 
-Hello, Website!
 
-For more information about simple R Markdown websites, please read the documentation at https://bookdown.org/yihui/rmarkdown/rmarkdown-site.html.
+<img src="images/profile_picture.jpg" style="width:25%; border:10px solid; margin-right: 20px" align="left">
 
-Please also note that simple R Markdown sites are _not_ based on **blogdown**. They are probably good for websites with only a few Rmd documents. For larger-scale and more sophisticated websites (such as blogs), you may want to use **blogdown** instead: https://github.com/rstudio/blogdown.
+I graduated from the [University of Colorado](https://www.colorado.edu/ebio/) with a BA in Ecology and Evolutionary Biology in 2014. In 2019 I began working toward my MESM Economics and Politics of the Environment [The Bren School For Environmental Science and Management](http://www.bren.ucsb.edu/)
+
+My full CV is available [here](files/Omasta_Resume.pdf).
