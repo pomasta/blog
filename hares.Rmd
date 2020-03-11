@@ -5,8 +5,10 @@ date: "1/30/2020"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r setup, include=TRUE, message=FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
 
 #attach packages
 library(tidyverse)
@@ -23,11 +25,11 @@ library(gridExtra)
 library(knitr)
 ```
 
-#### **Part 1: Introduction**
+#### **Introduction**
 
 The data was collected from 1998 - 2012 at the Bonanza Creek Experimental Forest inside of the Bonanza Creek LTER just outside Fairbanks, Alaska [3]. Snowshoe hares (*Lepus americanus*) are a well documented species that observe a 10 year cycle of population growth and decline [1,2]. This data set will examine to see whether this population of snowshoe hares in the Bonanza Creek LTER also observe a similar 10 year trend. We will explore the weight of both male and females inside of the population to see if there are trends that overlap with the ten year cycle of reproduction. 
 
-#### **Part 2: Images**
+#### **Images**
 
 <img src="images/hare.png" style="width:100%; margin-right: 20px" align="left">
 
@@ -35,7 +37,7 @@ The data was collected from 1998 - 2012 at the Bonanza Creek Experimental Forest
 
 Pictures of a Snowshoe Hare and the study area. 
 
-```{r, include = FALSE}
+```{r}
 #Will start be reading in the necessary data files, which is the snowshoe_lter.csv file
 
 hares <- read_csv(here::here("data","showshoe_lter.csv"))
@@ -65,7 +67,7 @@ hare_clean <- hares %>%
   
 ```
 
-```{r,include=FALSE}
+```{r}
 #Will start with the graph and looking at the data
 
 ggplot(hare_clean, aes(x = hindft, y=weight)) +
@@ -133,7 +135,7 @@ hare_tidy_age <- hare_clean %>%
 
 ```
 
-```{r, include = FALSE}
+```{r}
 #create a data frame for analysis of population counts by year
 hare_spatial <- hare_tidy %>% 
   group_by(year, sex) %>% 
@@ -149,7 +151,7 @@ hare_weight <- hare_tidy %>%
              
 ```
 
-```{r, include = FALSE}
+```{r}
 #graph 1
 graph1 <- ggplot(hare_spatial, aes(x = year, y=n)) +
   geom_point(aes(color=sex)) +
@@ -196,7 +198,7 @@ grid.arrange(graph1, graph2, ncol=1)
 
 The findings of this survey show a consistent trend that has been documented in previous studies (O’Donoghue, M. & Krebs, 1992; Belovsky, 1984) where snowshoe hares operate on a ten year population cycle. The population crashed in 2002 from a high in 1999, it then reached a new high in 2009 before crashing in 2012 again. Both genders follow this trend across years. While males have a relatively consistent weight, the females have a low mean weight in 2002, which may indicate a reason for why the population crashed. Lower physical health, interpreted by birth weight, may have resulted in lower birth rates. As female weights rebounded, the counts of snowshoe hares also increased, indicating that the health of female hares may be critical to maintaining snowshoe hare populations. 
 
-```{r, include = FALSE}
+```{r}
 #Now it is time for the summary statistics 
 
 hare_summary <- hare_tidy %>% 

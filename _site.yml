@@ -1,4 +1,5 @@
 name: "Peter Omasta's Blog"
+theme: minima
 navbar:
   title: "My Blog"
   left:
@@ -12,3 +13,4 @@ navbar:
       href: hawaii.html
     - text: "Farming"
       href: farming.html
+

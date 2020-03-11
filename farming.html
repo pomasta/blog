@@ -306,20 +306,85 @@ $(document).ready(function () {
 </div>
 
 
-<div id="introduction" class="section level4">
-<h4><strong>Introduction:</strong></h4>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+
+#attach packages
+library(tidyverse)
+library(janitor)
+library(here)
+library(kableExtra)
+library(sf)
+library(naniar)
+library(ggfortify)
+library(lubridate)
+library(data.table)
+library(DT)
+library(gridExtra)
+library(knitr)</code></pre>
+<div id="introduction" class="section level3">
+<h3><strong>Introduction:</strong></h3>
 <p>This data set was created by <span class="citation">@zander_venter</span> and was acquired through the Google Earth Engine [1], it is a data set that examines various environmental and climactic variables on a country level. For this analysis, we are looking specifically at the data related to cropland cover and climatic variables related to weather (namely precipitaion and temperature). In order to find which variables were associated with the amount of cropland that was present in a country, a primary component analysis was conducted.</p>
 <p><img src="images/rice_farm.jpg" style="width:100%; ; margin-right: 20px" align="left"></p>
+<pre class="r"><code>#starting off with loading in the necessary data frames 
+
+world_env &lt;- read_csv(here::here(&quot;data&quot;,&quot;world_env_vars.csv&quot;)) %&gt;% 
+  clean_names()
+
+#remove antarctica which has all NA values 
+world_env &lt;- world_env[-4, ]</code></pre>
+<pre class="r"><code>#now time to run the pca analysis, see if we can find something interesting, first will create the data subset to do that
+
+world_sub &lt;- world_env %&gt;% 
+  select(cropland_cover, temp_mean_annual, temp_max_warmest_month,
+         temp_min_coldest_month, rain_mean_annual, rain_driest_month,
+         rain_wettest_month, elevation, isothermality)
+
+#now time to run the PCa analysis
+
+#pca_world &lt;- prcomp(world_sub, scale=TRUE) was #&#39;d out because it was resulting in an error 
+
+#got an error, will explore where
+
+gg_miss_var(world_sub)</code></pre>
+<p><img src="farming_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>#will use tidyr::drop_na() to allow for analysis
+
+world_nona &lt;- world_sub %&gt;% 
+  drop_na()
+
+#only 9 rows removed, so data set is still fairly large and intact to allow for the analysis</code></pre>
+<pre class="r"><code>#now that the data is tidy, time to run the pca analysis
+
+world_pca &lt;- prcomp(world_nona, scale= TRUE)
+
+#look at the pca analysis 
+summary(world_pca)</code></pre>
+<pre><code>## Importance of components:
+##                           PC1    PC2    PC3     PC4     PC5     PC6    PC7
+## Standard deviation     2.1325 1.3856 1.0409 0.81762 0.61524 0.54471 0.2970
+## Proportion of Variance 0.5053 0.2133 0.1204 0.07428 0.04206 0.03297 0.0098
+## Cumulative Proportion  0.5053 0.7186 0.8390 0.91325 0.95531 0.98828 0.9981
+##                            PC8     PC9
+## Standard deviation     0.11933 0.05541
+## Proportion of Variance 0.00158 0.00034
+## Cumulative Proportion  0.99966 1.00000</code></pre>
+<pre class="r"><code>plot(world_pca)</code></pre>
+<p><img src="farming_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>#yay last part which is creating a bi plot for this data
+biplot(world_pca)</code></pre>
+<p><img src="farming_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>#nope that is very ugly, will clean this up using ggfortify</code></pre>
 <p>An image of rice paddies in S.E. Asia.</p>
 </div>
-<div id="pca-biplot" class="section level4">
-<h4><strong>PCA Biplot</strong></h4>
+<div id="pca-biplot" class="section level3">
+<h3><strong>PCA Biplot</strong></h3>
 <div class="figure">
 <img src="farming_files/figure-html/unnamed-chunk-5-1.png" alt="Figure 1: Principal component analysis (PCA) of environmental and climactic variables. The axes of the PCA explain 71.86% of the variance present in the data set. The length of each line indicates the variance described by that value (longer length = greater variance) while the angle between two lines details how correlated the variables are (0 degrees is a correlation of 1, 90 degress is a correlation of 0, 180 degrees is a correlation of -1.) " width="672" />
 <p class="caption">
 Figure 1: Principal component analysis (PCA) of environmental and climactic variables. The axes of the PCA explain 71.86% of the variance present in the data set. The length of each line indicates the variance described by that value (longer length = greater variance) while the angle between two lines details how correlated the variables are (0 degrees is a correlation of 1, 90 degress is a correlation of 0, 180 degrees is a correlation of -1.)
 </p>
-</div>
 </div>
 <div id="summary" class="section level4">
 <h4><strong>Summary</strong></h4>
@@ -336,6 +401,7 @@ Figure 1: Principal component analysis (PCA) of environmental and climactic vari
 <li>Google Earth Engine. <a href="https://earthengine.google.com" class="uri">https://earthengine.google.com</a>.</li>
 </ol></li>
 </ul>
+</div>
 </div>
 
 

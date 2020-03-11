@@ -4,10 +4,13 @@ author: "Peter Omasta"
 date: "2/18/2020"
 output: html_document
 ---
-## **TASK 2**
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,
+
+```{r setup, include=TRUE, message=FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
                       warning = FALSE)
+
+#attach necessary packages
 library(tidyverse)
 library(here)
 library(janitor)
@@ -25,7 +28,9 @@ This data was provided by the Columbia Basin Research DART, which is affiliated 
 <img src="images/bonneville_dam.jpg" style="width:100%; margin-right: 20px" align="left">
 
 
-```{r, include=FALSE}
+```{r}
+#read in data file
+
 salmon_data <- read_csv(here::here("data","cbr_fish_passage_bonneville_allyrs_steelhead.csv")) %>% 
   janitor::clean_names()
 ```
@@ -47,7 +52,7 @@ salmon_clean <- salmon_data %>%
 
 ```
 
-```{r, include = FALSE}
+```{r}
 #alright, now time to create the different time series data frames 
 
 #first A finalized time series plot of the original observations (daily data)
@@ -117,7 +122,7 @@ month_graph + scale_color_paletteer_d(("rcartocolor::Antique"))
 
 ```
 
-```{r, include = FALSE}
+```{r}
 #looks good lets see if we can make this as a tsibble seasonal plot to see trends 
 
 #create a tsibble data frame

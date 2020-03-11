@@ -306,15 +306,70 @@ $(document).ready(function () {
 </div>
 
 
-<div id="task-2" class="section level2">
-<h2><strong>TASK 2</strong></h2>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+
+#attach necessary packages
+library(tidyverse)
+library(here)
+library(janitor)
+library(lubridate)
+library(paletteer)
+library(tsibble)
+library(fable)
+library(fabletools)
+library(feasts)
+library(forecast)</code></pre>
 <div id="introduction" class="section level3">
 <h3><strong>Introduction:</strong></h3>
 <p>This data was provided by the Columbia Basin Research DART, which is affiliated with the University of Washington [1]. The data set goes back to 1939 and shows the daily record of the number of steelhead salmon that have passed through the Bonneville Dam which was built across the Columbia River that seperates Oregon and Washington. The Bonneville Dam has a fish ladder that was constructed in 1937 which has helped facilitate migration of steelhead salmon and other salmon species back to their spawning grounds. [2] Steelhead salmon were added onto the Endangered Species Act in 1999, and this analysis will partially look at how populations, as measured by movement up the river, have responded since that time. [3]</p>
 <p><img src="images/bonneville_dam.jpg" style="width:100%; margin-right: 20px" align="left"></p>
+<pre class="r"><code>#read in data file
+
+salmon_data &lt;- read_csv(here::here(&quot;data&quot;,&quot;cbr_fish_passage_bonneville_allyrs_steelhead.csv&quot;)) %&gt;% 
+  janitor::clean_names()</code></pre>
+<pre class="r"><code>#start by tidying and cleaning up the data set, getting dates into different columns, combing for one aggregate date column, and parsing out each column separately to work in tsibble with
+
+salmon_clean &lt;- salmon_data %&gt;% 
+  unite(&quot;ydm&quot;, year:mm_dd, sep = &quot;-&quot;, remove=FALSE) %&gt;% 
+  mutate(yr_mon_day = parse_date_time(ydm, &quot;ydm&quot;)) %&gt;% 
+  mutate(yr_mon = parse_date_time(ydm, &quot;ym&quot;)) %&gt;% 
+  mutate(month = month(yr_mon_day, label = TRUE)) %&gt;% 
+  mutate(year = year(yr_mon_day)) %&gt;% 
+  mutate(day = day(yr_mon_day)) %&gt;% 
+  mutate(value = as.numeric(value)) %&gt;% 
+  mutate(yr_mon_day = as_date(yr_mon_day)) %&gt;% 
+  drop_na()</code></pre>
+<pre class="r"><code>#alright, now time to create the different time series data frames 
+
+#first A finalized time series plot of the original observations (daily data)
+
+salmon_daily &lt;- ggplot(data = salmon_clean, aes(x = ydm, y = value, group = year)) +
+  geom_line(aes(color = month)) + 
+  theme_minimal()
+
+salmon_daily + scale_color_paletteer_d((&quot;palettetown::alakazam&quot;))</code></pre>
+<p><img src="bonneville_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>#this graph makes me want to throw up, I am going to cut down the time frame </code></pre>
 </div>
 <div id="daily-count-information" class="section level3">
 <h3><strong>Daily Count Information</strong></h3>
+<pre class="r"><code>#second attempt at the daily graph
+daily_df &lt;- salmon_clean %&gt;% 
+  filter(year %in% c(&quot;2015&quot;,&quot;2016&quot;,&quot;2017&quot;,&quot;2018&quot;,&quot;2019&quot;)) 
+
+daily_graph &lt;- ggplot(data = daily_df, aes(x = yr_mon_day, y = value)) +
+  geom_point(aes(color = value)) +
+  labs(
+    title = &quot;Bonneville Dam Daily Steelhead Salmon Passage&quot;,
+    subtitle = &quot;From 2015 to 2019&quot;,
+    x = &quot;Date&quot;,
+    y = &quot;Number of Steelhead Salmon per Day&quot;,
+    color = &quot;Number of Salmon Counted&quot;
+  ) +
+  theme_minimal()
+daily_graph + scale_color_paletteer_c((&quot;gameofthrones::targaryen&quot;))</code></pre>
 <div class="figure">
 <img src="bonneville_files/figure-html/unnamed-chunk-4-1.png" alt="The figure shows the individual counts of steelhead salmon at the Bonneville Dam from 2015 to 2019. Each individual point represents one day. Each year starts on Januaray 1st, and ends December 31st." width="672" />
 <p class="caption">
@@ -330,12 +385,52 @@ The figure shows the individual counts of steelhead salmon at the Bonneville Dam
 </div>
 <div id="monthly-count-information" class="section level3">
 <h3><strong>Monthly Count Information</strong></h3>
+<pre class="r"><code>#create a dataframe that has monthly counts
+month_df &lt;- salmon_clean %&gt;% 
+  group_by(year, month) %&gt;% 
+  summarize(
+    month_count = sum(value)
+  ) %&gt;% 
+  drop_na() %&gt;% 
+  filter(year %in% c(1975:2019))
+
+month_graph &lt;- ggplot(month_df, aes(x = year, y = month_count)) +
+  geom_line(aes(color = month),
+            size = 1.2,
+            alpha = 0.8) +
+  labs(
+    title = &quot;Monthly Steelhead Salmon Count at Bonneville Dam&quot;,
+    subtitle = &quot;Collected from 1975 - 2019&quot;,
+    x = &quot;Year&quot;,
+    y = &quot;# of Steelhead Salmon&quot;,
+    color = &quot;Month&quot;
+  ) +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 150000)) +
+  scale_x_continuous(limits = c(1975, 2020))
+
+month_graph + scale_color_paletteer_d((&quot;rcartocolor::Antique&quot;))</code></pre>
 <div class="figure">
 <img src="bonneville_files/figure-html/unnamed-chunk-5-1.png" alt="This figure shows the monthly counts for steelhead salmon at the Bonneville Dam from 1975 until 2019. With the 80 year data set, each month is seperated, and values were derived by summing together daily counts from the dam by month and year." width="672" />
 <p class="caption">
 This figure shows the monthly counts for steelhead salmon at the Bonneville Dam from 1975 until 2019. With the 80 year data set, each month is seperated, and values were derived by summing together daily counts from the dam by month and year.
 </p>
 </div>
+<pre class="r"><code>#looks good lets see if we can make this as a tsibble seasonal plot to see trends 
+
+#create a tsibble data frame
+month_ts &lt;- as_tsibble(salmon_clean, key = month, index = yr_mon_day)
+
+#hmm data frame has NAs, need to drop them or fill them
+
+filled_month_ts &lt;- fill_gaps(month_ts, .full = FALSE)
+filled_month_ts %&gt;% gg_season(value)</code></pre>
+<p><img src="bonneville_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>#that is terrible to look at
+
+autoplot(filled_month_ts)</code></pre>
+<p><img src="bonneville_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code>#this also tells me nothing, lets just stick with the original plot</code></pre>
 <div id="discussion-1" class="section level4">
 <h4><strong>Discussion</strong></h4>
 <p>-Steelhead salmon are known to begin their run tpically in August. This is the period of their life where they return back to the stream in which they were born to reproduce and also die [4]. Throughout the time series data shown above, we see the highest runs and count of salmon being in these late summer months, primarily August, but occasionally in September. For the remainder of the year counts are relatively low. While there is a pattern of salmon movement between different months, there does not appear to be a trend between months increasing or decreasing, but rather they are indicating more annual trends than seasonal.</p>
@@ -343,6 +438,28 @@ This figure shows the monthly counts for steelhead salmon at the Bonneville Dam 
 </div>
 <div id="annual-count-information" class="section level3">
 <h3><strong>Annual Count Information</strong></h3>
+<pre class="r"><code>#annual counts
+
+annual_df &lt;- salmon_clean %&gt;% 
+  group_by(year) %&gt;% 
+  summarize(
+    annual_count = sum(value, na.rm = TRUE)
+  )
+
+annual_graph &lt;- ggplot(annual_df, aes(x = year, y = annual_count)) +
+  geom_line(size = 1.2,
+            color = &quot;darkred&quot;) +
+  labs(
+    title = &quot;Annual Steelhead Salmon Count at Bonneville Dam&quot;,
+    subtitle = &quot;Collected from 1939 - 2019&quot;,
+    x = &quot;Year&quot;,
+    y = &quot;# of Steelhead Salmon&quot;
+  ) +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 300000)) +
+  scale_x_continuous(limits = c(1935, 2020))
+
+annual_graph</code></pre>
 <div class="figure">
 <img src="bonneville_files/figure-html/unnamed-chunk-7-1.png" alt="The figure above shows the annual counts of steelhead salmon from the Bonneville Dam from 1939 - 2019. Data was collected by summing daily counts for the entire year. The y-axis of 6 e+05 represents 300,000 total salmon for the year." width="672" />
 <p class="caption">
@@ -370,7 +487,6 @@ The figure above shows the annual counts of steelhead salmon from the Bonneville
 <li>Raymond, Howard L. “Effects of Hydroelectric Development and Fisheries Enhancement on Spring and Summer Chinook Salmon and Steelhead in the Columbia River Basin.” North American Journal of Fisheries Management 8, no. 1 (February 1, 1988): 1–24. <a href="https://doi.org/10.1577/1548-8675(1988)008" class="uri">https://doi.org/10.1577/1548-8675(1988)008</a>&lt;0001:EOHDAF&gt;2.3.CO;2.</li>
 </ol></li>
 </ul>
-</div>
 </div>
 
 

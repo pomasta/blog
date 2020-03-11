@@ -314,18 +314,170 @@ $(document).ready(function () {
 </div>
 
 
-<div id="part-1-introduction" class="section level4">
-<h4><strong>Part 1: Introduction</strong></h4>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+
+#attach packages
+library(tidyverse)
+library(janitor)
+library(here)
+library(kableExtra)
+library(sf)
+library(naniar)
+library(ggfortify)
+library(lubridate)
+library(data.table)
+library(DT)
+library(gridExtra)
+library(knitr)</code></pre>
+<div id="introduction" class="section level4">
+<h4><strong>Introduction</strong></h4>
 <p>The data was collected from 1998 - 2012 at the Bonanza Creek Experimental Forest inside of the Bonanza Creek LTER just outside Fairbanks, Alaska [3]. Snowshoe hares (<em>Lepus americanus</em>) are a well documented species that observe a 10 year cycle of population growth and decline [1,2]. This data set will examine to see whether this population of snowshoe hares in the Bonanza Creek LTER also observe a similar 10 year trend. We will explore the weight of both male and females inside of the population to see if there are trends that overlap with the ten year cycle of reproduction.</p>
 </div>
-<div id="part-2-images" class="section level4">
-<h4><strong>Part 2: Images</strong></h4>
+<div id="images" class="section level4">
+<h4><strong>Images</strong></h4>
 <p><img src="images/hare.png" style="width:100%; margin-right: 20px" align="left"></p>
 <p><img src="images/bonanza.png" style="width:100%; margin-right: 20px" align="left"></p>
 <p>Pictures of a Snowshoe Hare and the study area.</p>
+<pre class="r"><code>#Will start be reading in the necessary data files, which is the snowshoe_lter.csv file
+
+hares &lt;- read_csv(here::here(&quot;data&quot;,&quot;showshoe_lter.csv&quot;))
+
+#going to select variables that I am interested in, size of right ear, weight, sex, age, and length of the hindfoot 
+
+hare_clean &lt;- hares %&gt;% 
+  select(date, r_ear:hindft, study) %&gt;% 
+  separate(date, sep=&quot;/&quot;, into = c(&quot;month&quot;, &quot;day&quot;, &quot;year&quot;)) %&gt;% 
+  mutate(year = recode(year,
+                       &#39;98&#39; = &#39;1998&#39;,
+                       &#39;99&#39; = &#39;1999&#39;,
+                       &#39;00&#39; = &#39;2000&#39;,
+                       &#39;01&#39; = &#39;2001&#39;,
+                       &#39;02&#39; = &#39;2002&#39;,
+                       &#39;03&#39; = &#39;2003&#39;,
+                       &#39;04&#39; = &#39;2004&#39;,
+                       &#39;05&#39; = &#39;2005&#39;,
+                       &#39;06&#39; = &#39;2006&#39;,
+                       &#39;07&#39; = &#39;2007&#39;,
+                       &#39;08&#39; = &#39;2008&#39;,
+                       &#39;09&#39; = &#39;2009&#39;,
+                       &#39;10&#39; = &#39;2010&#39;,
+                       &#39;11&#39; = &#39;2011&#39;,
+                       &#39;12&#39; = &#39;2012&#39;)) %&gt;% 
+  mutate(year = as.numeric(year))</code></pre>
+<pre class="r"><code>#Will start with the graph and looking at the data
+
+ggplot(hare_clean, aes(x = hindft, y=weight)) +
+  geom_jitter(aes(color=sex))</code></pre>
+<p><img src="hares_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(hare_clean, aes(x = hindft, y=weight)) +
+  geom_jitter(aes(color=study))</code></pre>
+<p><img src="hares_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<pre class="r"><code>#that is very ugly, need to do more wrangling to clean up the data set, namely changing the sexes to be the same, removing NAs, etc
+
+#going to assume that f?, F?, m?, and M? are M and F respectively, as there is no way of knowing for certain and omission may skew the data 
+hare_tidy &lt;- hare_clean %&gt;% 
+  mutate(sex = recode(sex,
+                      &#39;f&#39; = &#39;F&#39;,
+                      &#39;m&#39; = &#39;M&#39;,
+                      &#39;f?&#39; = &#39;F&#39;,
+                      &#39;m?&#39; = &#39;M&#39;,
+                      &#39;F?&#39; = &#39;F&#39;,
+                      &#39;M?&#39; = &#39;M&#39;)) %&gt;% 
+  filter(sex %in% c(&quot;M&quot;,&quot;F&quot;))
+
+#hmm cleaned up the sexes, now need the ages, will graph first to see the spread of the data
+
+ggplot(hare_clean, aes(x=sex, y=weight)) +
+  geom_jitter(aes(color=age))</code></pre>
+<p><img src="hares_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<pre class="r"><code>#ugh lots of diffferent ones, looks like the authors have all adults being 1 year or older, and juveniles as less than one year, will sort them into these categories. 
+
+hare_tidy_age &lt;- hare_clean %&gt;% 
+  mutate(age = recode(age,
+                      &#39;a&#39; = &#39;A&#39;,
+                      &#39;j&#39; = &#39;J&#39;,
+                      &#39;a 1 &#39; = &#39;A&#39;, 
+                      &#39;1 yr.&#39; = &#39;A&#39;,
+                      &#39;1&#39; = &#39;A&#39;,
+                      &#39;1 yr&#39; = &#39;A&#39;,
+                      &#39;1.25&#39; = &#39;A&#39;,
+                      &#39;1.5&#39; = &#39;A&#39;,
+                      &#39;2 yrs&#39; = &#39;A&#39;,
+                      &#39;2 yrs.&#39; = &#39;A&#39;,
+                      &#39;2.25&#39; = &#39;A&#39;,
+                      &#39;2.25 yrs&#39; = &#39;A&#39;,
+                      &#39;2.5 yrs&#39; = &#39;A&#39;,
+                      &#39;2.5&#39; = &#39;A&#39;,
+                      &#39;3 yrs.&#39; = &#39;A&#39;,
+                      &#39;3.25 yrs.&#39; = &#39;A&#39;,
+                      &#39;3.5 yrs.&#39; = &#39;A&#39;,
+                      &#39;a 1 yr&#39; = &#39;A&#39;,
+                      &#39;a 1 yr.&#39; = &#39;A&#39;,
+                      &#39;A 1.5&#39; = &#39;A&#39;,
+                      &#39;A 1/2&#39; = &#39;A&#39;,
+                      &#39;a 2 yrs.&#39; = &#39;A&#39;,
+                      &#39;A 3/4&#39; = &#39;A&#39;,
+                      &#39;a 3/4 yr.&#39; = &#39;A&#39;,
+                      &#39;J 3/4&#39; = &#39;J&#39;,
+                      &#39;u&#39; = &#39;U&#39;,
+                      &#39;?&#39; = &#39;U&#39;,
+                      &#39;A&#39; = &#39;Adult&#39;,
+                      &#39;J&#39; = &#39;Juvenile&#39;)) %&gt;% 
+  filter(age %in% c(&#39;Adult&#39;,&#39;Juvenile&#39;))
+
+
+#alright that looks better for the ages</code></pre>
+<pre class="r"><code>#create a data frame for analysis of population counts by year
+hare_spatial &lt;- hare_tidy %&gt;% 
+  group_by(year, sex) %&gt;% 
+  count(sex) 
+
+#data frame for weight by year
+hare_weight &lt;- hare_tidy %&gt;% 
+  group_by(year, sex) %&gt;% 
+  summarize(
+    average = (mean(weight, na.rm = TRUE))
+  )</code></pre>
+<pre class="r"><code>#graph 1
+graph1 &lt;- ggplot(hare_spatial, aes(x = year, y=n)) +
+  geom_point(aes(color=sex)) +
+  geom_line(aes(color=sex),
+            size = 1.3,
+            alpha=0.7) +
+  labs(x = &quot;Year&quot;,
+       y = &quot;Annual Count&quot;,
+       color = &quot;Sex&quot;) +
+  ggtitle(label = &quot;Figure 1&quot;,
+          subtitle = &quot;Annual Snowshoe Hare Count from Bonanza Creek LTER&quot;)+
+  theme(plot.title = element_text(hjust = 0.5,color = &quot;gray2&quot;, size= 14),
+        plot.subtitle = element_text(hjust = 0.5,color = &quot;gray8&quot;, size= 8),
+        plot.caption = element_text(hjust = 0)
+  ) +
+  scale_x_continuous(lim=c(1998,2012), expand = c(0,0)) +
+  scale_y_continuous(lim=c(0,300), expand = c(0,0)) +
+  theme_minimal() 
+
+#graph 2
+graph2 &lt;- ggplot(hare_weight, aes(x = year, y = average)) +
+  geom_point(aes(color=sex))+
+  geom_line(aes(color = sex),
+    size = 1.3,
+    alpha = 0.7 )+
+  ggtitle(label = &quot;Figure 1&quot;,
+          subtitle=&quot;Annual Mean Weight from Bonanza Creek LTER&quot;)+
+  labs(title = NULL,
+       x = &quot;Year&quot;,
+       y = &quot;Average Body Mass (g)&quot;,
+       color = &quot;Sex&quot;) + 
+  scale_x_continuous(lim=c(1998,2012), expand = c(0,0)) +
+  scale_y_continuous(lim=c(1000,1800), expand = c(0,0)) +
+  theme_minimal() </code></pre>
 </div>
 <div id="part-3-graph-and-table" class="section level4">
 <h4><strong>Part 3: Graph and Table</strong></h4>
+<pre class="r"><code>grid.arrange(graph1, graph2, ncol=1)</code></pre>
 <div class="figure">
 <img src="hares_files/figure-html/unnamed-chunk-5-1.png" alt="Figure 1: Displays the annual count and average weight in both male and female snowshoe hares from the Bonanza Creek LTER from 1998 to 2012. 3380 observations were collected over the course of the study but only 2987 are depicted on the graph. Data not included contains individuals that were captured whose sex was not recorded or was unknown. " width="672" />
 <p class="caption">
@@ -334,8 +486,28 @@ Figure 1: Displays the annual count and average weight in both male and female s
 </div>
 <p><strong>Discussion:</strong></p>
 <p>The findings of this survey show a consistent trend that has been documented in previous studies (O’Donoghue, M. &amp; Krebs, 1992; Belovsky, 1984) where snowshoe hares operate on a ten year population cycle. The population crashed in 2002 from a high in 1999, it then reached a new high in 2009 before crashing in 2012 again. Both genders follow this trend across years. While males have a relatively consistent weight, the females have a low mean weight in 2002, which may indicate a reason for why the population crashed. Lower physical health, interpreted by birth weight, may have resulted in lower birth rates. As female weights rebounded, the counts of snowshoe hares also increased, indicating that the health of female hares may be critical to maintaining snowshoe hare populations.</p>
-<p><div id="htmlwidget-1ec0a04abfa19d4a7e2b" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1ec0a04abfa19d4a7e2b">{"x":{"filter":"none","caption":"<caption>This table shows summary statistics of the weight in grams of snowshow hares from the Bonanza Creek LTER from different years starting in 1999 and ending in 2012.<\/caption>","data":[[1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012],[1686.9696969697,1265.47413793103,1376.79824561404,1390.21052631579,1201.78571428571,1212.71929824561,1472.16216216216,1279.54658385093,1385,1386.36842105263,1379.41077441077,1342.80092592593,1395.23148148148,1412.88095238095,1318.93617021277],[140.900781768698,385.266092285902,402.491484679116,405.162769884875,440.337022201964,310.417446719849,376.835308928894,398.046526022878,261.690158642687,328.522378986346,325.830653067072,268.931765294268,246.595754980229,248.221251281201,243.223229391127],[53,366,245,102,29,59,96,168,188,199,317,449,393,276,47],[19.3542108445595,20.1381812459349,25.714237717352,40.1170921107132,81.7685322496697,40.412909337905,38.4605926641607,30.7099562030516,19.0857163827491,23.2883339888046,18.3004727040804,12.691674698263,12.4391103621277,14.9411635447523,35.4777542872272],[19853.0303030303,148429.961865249,161999.395239199,164156.870100784,193896.693121693,96358.9912280702,142004.850055535,158441.036878882,68481.7391304348,107926.953494848,106165.614478115,72324.2943842915,60809.4663742691,61613.7895876054,59157.5393154487]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Year<\/th>\n      <th>Mean Weight (g)<\/th>\n      <th>Weigt Standard Deviation<\/th>\n      <th>Sample Size<\/th>\n      <th>Weight Standard Error<\/th>\n      <th>Weight Variance<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"dom":"tip","digits":2,"columnDefs":[{"className":"dt-right","targets":[0,1,2,3,4,5]}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100],"rowCallback":"function(row, data) {\nDTWidget.formatRound(this, row, data, 1, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 2, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 4, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 5, 2, 3, \",\", \".\");\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script> The table above shows the mean weight of all snowshoe hares in the Bonanza Creek LTER from 1998 - 2012 by year. The population in 1998 had the largest mean weight, and declined to its lowest point in 2002, this also corresponds with the ten year cycle that was documented earlier. By 2004, the population had reached a rough equilibrium of mean weight, oscilating between roughly 1350g and 1450g annually. The variance in the population is also extremely high indicating that it may be difficult to extrapolate too much from the results of this study with respect to body weight.</p>
+<pre class="r"><code>#Now it is time for the summary statistics 
+
+hare_summary &lt;- hare_tidy %&gt;% 
+  group_by(year) %&gt;% 
+  summarize(
+    mean_weight = mean(weight, na.rm = TRUE),
+    sd_weight = sd(weight, na.rm = TRUE),
+    sample_size = n(),
+    se_weight = sd(weight, na.rm = TRUE) / sqrt(n()),
+    var_weight = var(weight, na.rm = TRUE)
+    )
+#good table, going to now make it a pretty table for display </code></pre>
+<pre class="r"><code>#data table 
+
+datatable(hare_summary, colnames= c(&#39;Year&#39;, &#39;Mean Weight (g)&#39;, &#39;Weigt Standard Deviation&#39;, 
+                             &#39;Sample Size&#39;, &#39;Weight Standard Error&#39;, &#39;Weight Variance&#39;),
+               caption = &#39;This table shows summary statistics of the weight in grams of snowshow hares from the Bonanza Creek LTER from different years starting in 1999 and ending in 2012.&#39;,
+               options = list(pageLength =8, dom =&#39;tip&#39;, digits=2),
+               rownames = FALSE) %&gt;% 
+            formatRound(columns = c(&#39;mean_weight&#39;,&#39;sd_weight&#39;, &#39;se_weight&#39;, &#39;var_weight&#39;), digits=2)</code></pre>
+<p><div id="htmlwidget-94f78c82558975f41913" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-94f78c82558975f41913">{"x":{"filter":"none","caption":"<caption>This table shows summary statistics of the weight in grams of snowshow hares from the Bonanza Creek LTER from different years starting in 1999 and ending in 2012.<\/caption>","data":[[1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012],[1686.9696969697,1265.47413793103,1376.79824561404,1390.21052631579,1201.78571428571,1212.71929824561,1472.16216216216,1279.54658385093,1385,1386.36842105263,1379.41077441077,1342.80092592593,1395.23148148148,1412.88095238095,1318.93617021277],[140.900781768698,385.266092285902,402.491484679116,405.162769884875,440.337022201964,310.417446719849,376.835308928894,398.046526022878,261.690158642687,328.522378986346,325.830653067072,268.931765294268,246.595754980229,248.221251281201,243.223229391127],[53,366,245,102,29,59,96,168,188,199,317,449,393,276,47],[19.3542108445595,20.1381812459349,25.714237717352,40.1170921107132,81.7685322496697,40.412909337905,38.4605926641607,30.7099562030516,19.0857163827491,23.2883339888046,18.3004727040804,12.691674698263,12.4391103621277,14.9411635447523,35.4777542872272],[19853.0303030303,148429.961865249,161999.395239199,164156.870100784,193896.693121693,96358.9912280702,142004.850055535,158441.036878882,68481.7391304348,107926.953494848,106165.614478115,72324.2943842915,60809.4663742691,61613.7895876054,59157.5393154487]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Year<\/th>\n      <th>Mean Weight (g)<\/th>\n      <th>Weigt Standard Deviation<\/th>\n      <th>Sample Size<\/th>\n      <th>Weight Standard Error<\/th>\n      <th>Weight Variance<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"dom":"tip","digits":2,"columnDefs":[{"className":"dt-right","targets":[0,1,2,3,4,5]}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100],"rowCallback":"function(row, data) {\nDTWidget.formatRound(this, row, data, 1, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 2, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 4, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 5, 2, 3, \",\", \".\");\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script> The table above shows the mean weight of all snowshoe hares in the Bonanza Creek LTER from 1998 - 2012 by year. The population in 1998 had the largest mean weight, and declined to its lowest point in 2002, this also corresponds with the ten year cycle that was documented earlier. By 2004, the population had reached a rough equilibrium of mean weight, oscilating between roughly 1350g and 1450g annually. The variance in the population is also extremely high indicating that it may be difficult to extrapolate too much from the results of this study with respect to body weight.</p>
 </div>
 <div id="citations" class="section level4">
 <h4><strong>Citations</strong></h4>

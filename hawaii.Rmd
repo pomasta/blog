@@ -5,10 +5,12 @@ date: "2/19/2020"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,
+```{r setup, include=TRUE, message=FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      
                       message = FALSE,
                       warning = FALSE)
+
 #attach necessary packages
 library(tmaptools)
 library(sf)
@@ -22,11 +24,11 @@ library(shinyjs)
 library(paletteer)
 ```
 
-### **Part 3** 
+### **Introduction** 
 
 This will be creating a map which shows he different land use and covers for the Hawaiian islands. It also displays the different watersheds for all of the Hawaiian islands as well. The data was collected by the Hawaii Statewide GIS Program.
 
-```{r, include = FALSE}
+```{r}
 #read in the necessary shape files 
 
 land_use <- read_sf(dsn = here::here("data"), layer ="Land_Use_Land_Cover_LULC") %>% 
@@ -42,7 +44,7 @@ water_sheds <- read_sf(dsn = here::here("data"), layer="Watersheds") %>%
   clean_names()
 ```
 
-```{r, include= FALSE}
+```{r}
 #tidy up the data set that we are working with
 land_clean <- land_use %>%  
   mutate(landcover = recode(landcover, 
@@ -99,7 +101,7 @@ The map above shows the different land cover types that have been changed to acc
 
 ### **Watersheds**
 
-```{r, include=FALSE}
+```{r}
 #time for the watershed maps, start with a basic view
 
 mapview(water_sheds)
@@ -135,16 +137,3 @@ The above map shows the different watersheds in hawaii, the color corresponds to
 ### **Citations**
 
 Watersheds. (n.d.). Retrieved February 19, 2020, from http://geoportal.hawaii.gov/datasets/watersheds
-=======
-This will be creating a map which shows he different land use and covers for the Hawaiian islands. It also displays the different watersheds for all of the Hawaiian islands as well. 
-
-```{r}
-#read in the necessary shape files 
-
-land_use <- read_sf(dsn = here::here("data"), layer ="Land_Use_Land_Cover_LULC") %>% 
-  clean_names() 
-
-#read in watershed data
-water_sheds <- read_sf(dsn = here::here("data"), layer="Watersheds")
-```
-
