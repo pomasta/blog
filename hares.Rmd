@@ -29,10 +29,11 @@ The data was collected from 1998 - 2012 at the Bonanza Creek Experimental Forest
 
 #### **Part 2: Images**
 
-<img src="images/hare.png" style="width:75%; margin-right: 20px" align="left">
+<img src="images/hare.png" style="width:100%; margin-right: 20px" align="left">
 
-<img src="images/bonanza.png" style="width:75%; margin-right: 20px" align="left">
+<img src="images/bonanza.png" style="width:100%; margin-right: 20px" align="left">
 
+Pictures of a Snowshoe Hare and the study area. 
 
 ```{r, include = FALSE}
 #Will start be reading in the necessary data files, which is the snowshoe_lter.csv file

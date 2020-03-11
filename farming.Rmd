@@ -27,7 +27,7 @@ library(knitr)
 
 This data set was created by @zander_venter and was acquired through the Google Earth Engine [1], it is a data set that examines various environmental and climactic variables on a country level. For this analysis, we are looking specifically at the data related to cropland cover and climatic variables related to weather (namely precipitaion and temperature). In order to find which variables were associated with the amount of cropland that was present in a country, a primary component analysis was conducted. 
 
-<img src="images/rice_farm.jpg" style="width:75%; ; margin-right: 20px" align="left">
+<img src="images/rice_farm.jpg" style="width:100%; ; margin-right: 20px" align="left">
 
 ```{r, include = FALSE}
 #starting off with loading in the necessary data frames 
@@ -81,6 +81,7 @@ biplot(world_pca)
 
 #nope that is very ugly, will clean this up using ggfortify
 ```
+An image of rice paddies in S.E. Asia. 
 
 #### **PCA Biplot** 
 ```{r, echo= FALSE, warning=FALSE, fig.cap="Figure 1: Principal component analysis (PCA) of environmental and climactic variables. The axes of the PCA explain 71.86% of the variance present in the data set. The length of each line indicates the variance described by that value (longer length = greater variance) while the angle between two lines details how correlated the variables are (0 degrees is a correlation of 1, 90 degress is a correlation of 0, 180 degrees is a correlation of -1.) "}

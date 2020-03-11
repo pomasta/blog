@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Me" />
+<meta name="author" content="Peter Omasta" />
 
 
-<title>Part 2</title>
+<title>Steelhead Salmon at Bonneville Dam</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -276,16 +276,16 @@ $(document).ready(function () {
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="Hares.html">Snowshoe Hares</a>
+  <a href="hares.html">Snowshoe Hares</a>
 </li>
 <li>
-  <a href="Bonneville.html">Bonneville Dam</a>
+  <a href="bonneville.html">Bonneville Dam</a>
 </li>
 <li>
   <a href="hawaii.html">Hawaiian Maps</a>
 </li>
 <li>
-  <a href="Farming.html">Farming</a>
+  <a href="farming.html">Farming</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -299,8 +299,8 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Part 2</h1>
-<h4 class="author">Me</h4>
+<h1 class="title toc-ignore">Steelhead Salmon at Bonneville Dam</h1>
+<h4 class="author">Peter Omasta</h4>
 <h4 class="date">2/18/2020</h4>
 
 </div>
@@ -310,10 +310,66 @@ $(document).ready(function () {
 <h2><strong>TASK 2</strong></h2>
 <div id="introduction" class="section level3">
 <h3><strong>Introduction:</strong></h3>
-<p>This data was provided by the Columbia Basin Research DART, which is affiliated with the University of Washington [1]. The data set goes back to 1939 and shows the daily record of the number of steelhead salmon that have passed through the Bonneville Dam which was built across the Columbia River that seperates Oregon and Washington. The Bonneville Dam has a fish ladder that was constructed in 1937 which has helped facilitate migration of steelhead salmon and other salmon species back to their spawning grounds. [2]</p>
-<p><img src="images/bonneville_dam.jpg" style="width:75%; margin-right: 20px" align="left"></p>
-<p><img src="bonneville_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p><img src="bonneville_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>This data was provided by the Columbia Basin Research DART, which is affiliated with the University of Washington [1]. The data set goes back to 1939 and shows the daily record of the number of steelhead salmon that have passed through the Bonneville Dam which was built across the Columbia River that seperates Oregon and Washington. The Bonneville Dam has a fish ladder that was constructed in 1937 which has helped facilitate migration of steelhead salmon and other salmon species back to their spawning grounds. [2] Steelhead salmon were added onto the Endangered Species Act in 1999, and this analysis will partially look at how populations, as measured by movement up the river, have responded since that time. [3]</p>
+<p><img src="images/bonneville_dam.jpg" style="width:100%; margin-right: 20px" align="left"></p>
+</div>
+<div id="daily-count-information" class="section level3">
+<h3><strong>Daily Count Information</strong></h3>
+<div class="figure">
+<img src="bonneville_files/figure-html/unnamed-chunk-4-1.png" alt="The figure shows the individual counts of steelhead salmon at the Bonneville Dam from 2015 to 2019. Each individual point represents one day. Each year starts on Januaray 1st, and ends December 31st." width="672" />
+<p class="caption">
+The figure shows the individual counts of steelhead salmon at the Bonneville Dam from 2015 to 2019. Each individual point represents one day. Each year starts on Januaray 1st, and ends December 31st.
+</p>
+</div>
+<div id="discussion" class="section level4">
+<h4><strong>Discussion</strong></h4>
+<ul>
+<li>The figure above shows the daily counts of steelhead from the Bonneville Dam. There appears to be a trend among daily peaks occuring in the late summer months (August / September) but the peaks are decreasing as time goes on. While there does not appear to be any seasonality shift, lets look at monthly data from a longer time period to see if there is a discernable shift in salmon counts.</li>
+</ul>
+</div>
+</div>
+<div id="monthly-count-information" class="section level3">
+<h3><strong>Monthly Count Information</strong></h3>
+<div class="figure">
+<img src="bonneville_files/figure-html/unnamed-chunk-5-1.png" alt="This figure shows the monthly counts for steelhead salmon at the Bonneville Dam from 1975 until 2019. With the 80 year data set, each month is seperated, and values were derived by summing together daily counts from the dam by month and year." width="672" />
+<p class="caption">
+This figure shows the monthly counts for steelhead salmon at the Bonneville Dam from 1975 until 2019. With the 80 year data set, each month is seperated, and values were derived by summing together daily counts from the dam by month and year.
+</p>
+</div>
+<div id="discussion-1" class="section level4">
+<h4><strong>Discussion</strong></h4>
+<p>-Steelhead salmon are known to begin their run tpically in August. This is the period of their life where they return back to the stream in which they were born to reproduce and also die [4]. Throughout the time series data shown above, we see the highest runs and count of salmon being in these late summer months, primarily August, but occasionally in September. For the remainder of the year counts are relatively low. While there is a pattern of salmon movement between different months, there does not appear to be a trend between months increasing or decreasing, but rather they are indicating more annual trends than seasonal.</p>
+</div>
+</div>
+<div id="annual-count-information" class="section level3">
+<h3><strong>Annual Count Information</strong></h3>
+<div class="figure">
+<img src="bonneville_files/figure-html/unnamed-chunk-7-1.png" alt="The figure above shows the annual counts of steelhead salmon from the Bonneville Dam from 1939 - 2019. Data was collected by summing daily counts for the entire year. The y-axis of 6 e+05 represents 300,000 total salmon for the year." width="672" />
+<p class="caption">
+The figure above shows the annual counts of steelhead salmon from the Bonneville Dam from 1939 - 2019. Data was collected by summing daily counts for the entire year. The y-axis of 6 e+05 represents 300,000 total salmon for the year.
+</p>
+</div>
+<div id="discussion-2" class="section level4">
+<h4><strong>Discussion:</strong></h4>
+<p>-The graph above shows the annual counts of steelhead salmon from the Bonneville Dam since data started being recorded in 1939. Steelhead salmon along the Columbia river had gained protected status under the Endangered Species act in 1999, and the graph above shows that in the decade following their listing the amount of salmon going through the dam increased dramatically.</p>
+</div>
+</div>
+<div id="citations" class="section level3">
+<h3><strong>Citations:</strong></h3>
+<ul>
+<li><ol style="list-style-type: decimal">
+<li>Boggs, C. T., M. L. Keefer, C. A. Peery, T. C. Bjornn, and L. C. Stuehrenberg. “Fallback, Reascension, and Adjusted Fishway Escapement Estimates for Adult Chinook Salmon and Steelhead at Columbia and Snake River Dams.” Transactions of the American Fisheries Society 133, no. 4 (July 1, 2004): 932–49. <a href="https://doi.org/10.1577/T03-133.1" class="uri">https://doi.org/10.1577/T03-133.1</a>.</li>
+</ol></li>
+<li><ol start="2" style="list-style-type: decimal">
+<li>“DART Adult Passage Graphics &amp; Text | Columbia Basin Research.” Accessed February 19, 2020. <a href="http://www.cbr.washington.edu/dart/query/adult_graph_text" class="uri">http://www.cbr.washington.edu/dart/query/adult_graph_text</a>.</li>
+</ol></li>
+<li><ol start="3" style="list-style-type: decimal">
+<li>“Endangered Species Act, Columbia River Salmon and Steelhead, and the Biological Opinion.” Accessed February 20, 2020. <a href="https://www.nwcouncil.org/reports/columbia-river-history/endangeredspeciesact" class="uri">https://www.nwcouncil.org/reports/columbia-river-history/endangeredspeciesact</a>.</li>
+</ol></li>
+<li><ol start="4" style="list-style-type: decimal">
+<li>Raymond, Howard L. “Effects of Hydroelectric Development and Fisheries Enhancement on Spring and Summer Chinook Salmon and Steelhead in the Columbia River Basin.” North American Journal of Fisheries Management 8, no. 1 (February 1, 1988): 1–24. <a href="https://doi.org/10.1577/1548-8675(1988)008" class="uri">https://doi.org/10.1577/1548-8675(1988)008</a>&lt;0001:EOHDAF&gt;2.3.CO;2.</li>
+</ol></li>
+</ul>
 </div>
 </div>
 
