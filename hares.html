@@ -31,6 +31,8 @@
 <script src="site_libs/dt-core-1.10.19/js/jquery.dataTables.min.js"></script>
 <link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -297,7 +299,18 @@ $(document).ready(function () {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/pomasta">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/peter-omasta-a87b5783/">
+    <span class="fa fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -506,8 +519,8 @@ datatable(hare_summary, colnames= c(&#39;Year&#39;, &#39;Mean Weight (g)&#39;, &
                options = list(pageLength =8, dom =&#39;tip&#39;, digits=2),
                rownames = FALSE) %&gt;% 
             formatRound(columns = c(&#39;mean_weight&#39;,&#39;sd_weight&#39;, &#39;se_weight&#39;, &#39;var_weight&#39;), digits=2)</code></pre>
-<p><div id="htmlwidget-94f78c82558975f41913" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-94f78c82558975f41913">{"x":{"filter":"none","caption":"<caption>This table shows summary statistics of the weight in grams of snowshow hares from the Bonanza Creek LTER from different years starting in 1999 and ending in 2012.<\/caption>","data":[[1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012],[1686.9696969697,1265.47413793103,1376.79824561404,1390.21052631579,1201.78571428571,1212.71929824561,1472.16216216216,1279.54658385093,1385,1386.36842105263,1379.41077441077,1342.80092592593,1395.23148148148,1412.88095238095,1318.93617021277],[140.900781768698,385.266092285902,402.491484679116,405.162769884875,440.337022201964,310.417446719849,376.835308928894,398.046526022878,261.690158642687,328.522378986346,325.830653067072,268.931765294268,246.595754980229,248.221251281201,243.223229391127],[53,366,245,102,29,59,96,168,188,199,317,449,393,276,47],[19.3542108445595,20.1381812459349,25.714237717352,40.1170921107132,81.7685322496697,40.412909337905,38.4605926641607,30.7099562030516,19.0857163827491,23.2883339888046,18.3004727040804,12.691674698263,12.4391103621277,14.9411635447523,35.4777542872272],[19853.0303030303,148429.961865249,161999.395239199,164156.870100784,193896.693121693,96358.9912280702,142004.850055535,158441.036878882,68481.7391304348,107926.953494848,106165.614478115,72324.2943842915,60809.4663742691,61613.7895876054,59157.5393154487]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Year<\/th>\n      <th>Mean Weight (g)<\/th>\n      <th>Weigt Standard Deviation<\/th>\n      <th>Sample Size<\/th>\n      <th>Weight Standard Error<\/th>\n      <th>Weight Variance<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"dom":"tip","digits":2,"columnDefs":[{"className":"dt-right","targets":[0,1,2,3,4,5]}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100],"rowCallback":"function(row, data) {\nDTWidget.formatRound(this, row, data, 1, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 2, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 4, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 5, 2, 3, \",\", \".\");\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script> The table above shows the mean weight of all snowshoe hares in the Bonanza Creek LTER from 1998 - 2012 by year. The population in 1998 had the largest mean weight, and declined to its lowest point in 2002, this also corresponds with the ten year cycle that was documented earlier. By 2004, the population had reached a rough equilibrium of mean weight, oscilating between roughly 1350g and 1450g annually. The variance in the population is also extremely high indicating that it may be difficult to extrapolate too much from the results of this study with respect to body weight.</p>
+<p><div id="htmlwidget-15791ffe92a617eac9c8" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-15791ffe92a617eac9c8">{"x":{"filter":"none","caption":"<caption>This table shows summary statistics of the weight in grams of snowshow hares from the Bonanza Creek LTER from different years starting in 1999 and ending in 2012.<\/caption>","data":[[1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012],[1686.9696969697,1265.47413793103,1376.79824561404,1390.21052631579,1201.78571428571,1212.71929824561,1472.16216216216,1279.54658385093,1385,1386.36842105263,1379.41077441077,1342.80092592593,1395.23148148148,1412.88095238095,1318.93617021277],[140.900781768698,385.266092285902,402.491484679116,405.162769884875,440.337022201964,310.417446719849,376.835308928894,398.046526022878,261.690158642687,328.522378986346,325.830653067072,268.931765294268,246.595754980229,248.221251281201,243.223229391127],[53,366,245,102,29,59,96,168,188,199,317,449,393,276,47],[19.3542108445595,20.1381812459349,25.714237717352,40.1170921107132,81.7685322496697,40.412909337905,38.4605926641607,30.7099562030516,19.0857163827491,23.2883339888046,18.3004727040804,12.691674698263,12.4391103621277,14.9411635447523,35.4777542872272],[19853.0303030303,148429.961865249,161999.395239199,164156.870100784,193896.693121693,96358.9912280702,142004.850055535,158441.036878882,68481.7391304348,107926.953494848,106165.614478115,72324.2943842915,60809.4663742691,61613.7895876054,59157.5393154487]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Year<\/th>\n      <th>Mean Weight (g)<\/th>\n      <th>Weigt Standard Deviation<\/th>\n      <th>Sample Size<\/th>\n      <th>Weight Standard Error<\/th>\n      <th>Weight Variance<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"dom":"tip","digits":2,"columnDefs":[{"className":"dt-right","targets":[0,1,2,3,4,5]}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100],"rowCallback":"function(row, data) {\nDTWidget.formatRound(this, row, data, 1, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 2, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 4, 2, 3, \",\", \".\");\nDTWidget.formatRound(this, row, data, 5, 2, 3, \",\", \".\");\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script> The table above shows the mean weight of all snowshoe hares in the Bonanza Creek LTER from 1998 - 2012 by year. The population in 1998 had the largest mean weight, and declined to its lowest point in 2002, this also corresponds with the ten year cycle that was documented earlier. By 2004, the population had reached a rough equilibrium of mean weight, oscilating between roughly 1350g and 1450g annually. The variance in the population is also extremely high indicating that it may be difficult to extrapolate too much from the results of this study with respect to body weight.</p>
 </div>
 <div id="citations" class="section level4">
 <h4><strong>Citations</strong></h4>

@@ -13,4 +13,10 @@ navbar:
       href: hawaii.html
     - text: "Farming"
       href: farming.html
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/pomasta 
+    - icon: fa-linkedin fa-lg
+      href: https://www.linkedin.com/in/peter-omasta-a87b5783/
+  
 
