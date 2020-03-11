@@ -1,0 +1,166 @@
+---
+<<<<<<< HEAD
+title: "Hawaiian Land Use and Watershed Maps"
+author: "Peter Omasta"
+=======
+title: "Part3"
+author: "Me"
+>>>>>>> 4d2fd8610485bbd558a6ac8a00b0c9eed954317b
+date: "2/19/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+<<<<<<< HEAD
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+#attach necessary packages
+library(sf)
+library(tmap)
+library(tmaptools)
+=======
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(sf)
+library(tmap)
+>>>>>>> 4d2fd8610485bbd558a6ac8a00b0c9eed954317b
+library(mapview)
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(here)
+<<<<<<< HEAD
+library(shinyjs)
+=======
+>>>>>>> 4d2fd8610485bbd558a6ac8a00b0c9eed954317b
+library(paletteer)
+```
+
+### **Part 3** 
+
+<<<<<<< HEAD
+This will be creating a map which shows he different land use and covers for the Hawaiian islands. It also displays the different watersheds for all of the Hawaiian islands as well. The data was collected by the Hawaii Statewide GIS Program.
+
+```{r, include = FALSE}
+#read in the necessary shape files 
+
+land_use <- read_sf(dsn = here::here("data"), layer ="Land_Use_Land_Cover_LULC") %>% 
+  clean_names() %>% 
+  st_transform(crs = 4326)
+
+#lets just see what we are working with
+mapview(land_use)
+plot(land_use)
+
+#read in watershed data
+water_sheds <- read_sf(dsn = here::here("data"), layer="Watersheds") %>% 
+  clean_names()
+```
+
+```{r, include= FALSE}
+#tidy up the data set that we are working with
+land_clean <- land_use %>%  
+  mutate(landcover = recode(landcover, 
+                            'Orchards, Groves, Vineyards, Nurseries and Ornamental Horticultural Areas' = "Orchards")) %>% 
+  filter(landcover %in% c("Orchards",
+                          "Residential",
+                          "Industrial",
+                          "Confined Feeding Operations",
+                          "Industrial and Commercial Complexes",
+                          "Transitional Areas",
+                          "Mixed Urban or Built-up Land",
+                          "Strip Mines, Quarries, and Gravel Pits",
+                          "Other Agricultural Land",
+                          "Transportation, Communications and Utilities",
+                          "Reservoirs",
+                          "Mixed Rangeland",
+                          "Other Urban or Built-up Land",
+                          "Commercial and Services",
+                          "Cropland and Pasture"
+                          ))
+#uglyname that needs to be shortened 
+
+ggplot(data = land_use) +
+  geom_sf(color = "black",
+          size = 0.1) +
+  geom_sf(data = land_clean,
+          aes(fill= landcover),
+          alpha=0.5,
+          color="NA",
+          show.legend = FALSE) +
+  coord_sf(xlim = c(-156, -159), ylim = c(20,22)) 
+#hmm this is nice but would be better as an interactive map
+
+```
+
+```{r}
+#going to use tmap 
+tmap_mode("view") #makes it interactive when knitted 
+tm_shape(land_clean) +
+  tm_fill("landcover",
+          alpha = 0.7,
+          style = "fisher",
+          palette = "plasma") +
+  tm_basemap("Esri.WorldImagery") +
+  tm_layout(main.title = "Human Land Use in Hawaii",
+            main.title.position = "center",
+            main.title.color = "darkblue",
+            legend.outside = TRUE)
+
+#much better
+```
+The map above shows the different land cover types that have been changed to accomodate human use. Land use types include land that has been converted for human habitation (Residential), agriculture (Cropland and Pastureland, Orchards, etc.) and industrial (Industrial, Strip Mines, etc.) 
+### **Watersheds**
+
+```{r, include=FALSE}
+#time for the watershed maps, start with a basic view
+
+mapview(water_sheds)
+
+#cool, lets just focus on the island of O'ahu and make another interactive tmap
+
+```
+
+```{r}
+#map for the watersheds
+tm_shape(water_sheds,
+         name = "Hawaiian Watersheds")+
+    tm_fill("area_sqmi",
+          alpha = 0.7,
+          style = "fisher",
+          palette = "cividis",
+          title="Watershed Size Sq. Miles",
+          n=7) +
+  tm_basemap("Esri.WorldImagery") +
+  tm_layout(
+    title = "Hawaii Watersheds",
+    title.color = "black",
+    compass.type = "arrow",
+    legend.outside = TRUE,
+    legend.outside.position = "left",
+    main.title = "Hawaiian Watersheds",
+    main.title.color = "black"
+  )
+```
+
+The above map shows the different watersheds in hawaii, the color corresponds to the size of the watersheds in sq. miles.
+
+### **Citations**
+
+Watersheds. (n.d.). Retrieved February 19, 2020, from http://geoportal.hawaii.gov/datasets/watersheds
+=======
+This will be creating a map which shows he different land use and covers for the Hawaiian islands. It also displays the different watersheds for all of the Hawaiian islands as well. 
+
+```{r}
+#read in the necessary shape files 
+
+land_use <- read_sf(dsn = here::here("data"), layer ="Land_Use_Land_Cover_LULC") %>% 
+  clean_names() 
+
+#read in watershed data
+water_sheds <- read_sf(dsn = here::here("data"), layer="Watersheds")
+```
+
+>>>>>>> 4d2fd8610485bbd558a6ac8a00b0c9eed954317b

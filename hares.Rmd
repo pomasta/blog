@@ -1,0 +1,244 @@
+---
+title: "Snowshoe Hares"
+author: "Peter Omasta"
+date: "1/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+#attach packages
+library(tidyverse)
+library(janitor)
+library(here)
+library(kableExtra)
+library(sf)
+library(naniar)
+library(ggfortify)
+library(lubridate)
+library(data.table)
+library(DT)
+library(gridExtra)
+library(knitr)
+```
+
+#### **Part 1: Introduction**
+
+The data was collected from 1998 - 2012 at the Bonanza Creek Experimental Forest inside of the Bonanza Creek LTER just outside Fairbanks, Alaska [3]. Snowshoe hares (*Lepus americanus*) are a well documented species that observe a 10 year cycle of population growth and decline [1,2]. This data set will examine to see whether this population of snowshoe hares in the Bonanza Creek LTER also observe a similar 10 year trend. We will explore the weight of both male and females inside of the population to see if there are trends that overlap with the ten year cycle of reproduction. 
+
+#### **Part 2: Images**
+![Source: Denali National Park and Preserve.](hare.png){width=500px}
+
+![Source: University of Alaska Fairbanks.](bonanza.png){width=500px}
+
+
+```{r, include = FALSE}
+#Will start be reading in the necessary data files, which is the snowshoe_lter.csv file
+
+hares <- read_csv("showshoe_lter.csv")
+
+#going to select variables that I am interested in, size of right ear, weight, sex, age, and length of the hindfoot 
+
+hare_clean <- hares %>% 
+  select(date, r_ear:hindft, study) %>% 
+  separate(date, sep="/", into = c("month", "day", "year")) %>% 
+  mutate(year = recode(year,
+                       '98' = '1998',
+                       '99' = '1999',
+                       '00' = '2000',
+                       '01' = '2001',
+                       '02' = '2002',
+                       '03' = '2003',
+                       '04' = '2004',
+                       '05' = '2005',
+                       '06' = '2006',
+                       '07' = '2007',
+                       '08' = '2008',
+                       '09' = '2009',
+                       '10' = '2010',
+                       '11' = '2011',
+                       '12' = '2012')) %>% 
+  mutate(year = as.numeric(year))
+  
+```
+
+```{r,include=FALSE}
+#Will start with the graph and looking at the data
+
+ggplot(hare_clean, aes(x = hindft, y=weight)) +
+  geom_jitter(aes(color=sex))
+
+ggplot(hare_clean, aes(x = hindft, y=weight)) +
+  geom_jitter(aes(color=study))
+
+#that is very ugly, need to do more wrangling to clean up the data set, namely changing the sexes to be the same, removing NAs, etc
+
+#going to assume that f?, F?, m?, and M? are M and F respectively, as there is no way of knowing for certain and omission may skew the data 
+hare_tidy <- hare_clean %>% 
+  mutate(sex = recode(sex,
+                      'f' = 'F',
+                      'm' = 'M',
+                      'f?' = 'F',
+                      'm?' = 'M',
+                      'F?' = 'F',
+                      'M?' = 'M')) %>% 
+  filter(sex %in% c("M","F"))
+
+#hmm cleaned up the sexes, now need the ages, will graph first to see the spread of the data
+
+ggplot(hare_clean, aes(x=sex, y=weight)) +
+  geom_jitter(aes(color=age))
+
+#ugh lots of diffferent ones, looks like the authors have all adults being 1 year or older, and juveniles as less than one year, will sort them into these categories. 
+
+hare_tidy_age <- hare_clean %>% 
+  mutate(age = recode(age,
+                      'a' = 'A',
+                      'j' = 'J',
+                      'a 1 ' = 'A', 
+                      '1 yr.' = 'A',
+                      '1' = 'A',
+                      '1 yr' = 'A',
+                      '1.25' = 'A',
+                      '1.5' = 'A',
+                      '2 yrs' = 'A',
+                      '2 yrs.' = 'A',
+                      '2.25' = 'A',
+                      '2.25 yrs' = 'A',
+                      '2.5 yrs' = 'A',
+                      '2.5' = 'A',
+                      '3 yrs.' = 'A',
+                      '3.25 yrs.' = 'A',
+                      '3.5 yrs.' = 'A',
+                      'a 1 yr' = 'A',
+                      'a 1 yr.' = 'A',
+                      'A 1.5' = 'A',
+                      'A 1/2' = 'A',
+                      'a 2 yrs.' = 'A',
+                      'A 3/4' = 'A',
+                      'a 3/4 yr.' = 'A',
+                      'J 3/4' = 'J',
+                      'u' = 'U',
+                      '?' = 'U',
+                      'A' = 'Adult',
+                      'J' = 'Juvenile')) %>% 
+  filter(age %in% c('Adult','Juvenile'))
+
+
+#alright that looks better for the ages
+
+
+```
+
+```{r, include = FALSE}
+#create a data frame for analysis of population counts by year
+hare_spatial <- hare_tidy %>% 
+  group_by(year, sex) %>% 
+  count(sex) 
+
+#data frame for weight by year
+hare_weight <- hare_tidy %>% 
+  group_by(year, sex) %>% 
+  summarize(
+    average = (mean(weight, na.rm = TRUE))
+  )
+
+             
+```
+
+```{r, include = FALSE}
+#graph 1
+graph1 <- ggplot(hare_spatial, aes(x = year, y=n)) +
+  geom_point(aes(color=sex)) +
+  geom_line(aes(color=sex),
+            size = 1.3,
+            alpha=0.7) +
+  labs(x = "Year",
+       y = "Annual Count",
+       color = "Sex") +
+  ggtitle(label = "Figure 1",
+          subtitle = "Annual Snowshoe Hare Count from Bonanza Creek LTER")+
+  theme(plot.title = element_text(hjust = 0.5,color = "gray2", size= 14),
+        plot.subtitle = element_text(hjust = 0.5,color = "gray8", size= 8),
+        plot.caption = element_text(hjust = 0)
+  ) +
+  scale_x_continuous(lim=c(1998,2012), expand = c(0,0)) +
+  scale_y_continuous(lim=c(0,300), expand = c(0,0)) +
+  theme_minimal() 
+
+#graph 2
+graph2 <- ggplot(hare_weight, aes(x = year, y = average)) +
+  geom_point(aes(color=sex))+
+  geom_line(aes(color = sex),
+    size = 1.3,
+    alpha = 0.7 )+
+  ggtitle(label = "Figure 1",
+          subtitle="Annual Mean Weight from Bonanza Creek LTER")+
+  labs(title = NULL,
+       x = "Year",
+       y = "Average Body Mass (g)",
+       color = "Sex") + 
+  scale_x_continuous(lim=c(1998,2012), expand = c(0,0)) +
+  scale_y_continuous(lim=c(1000,1800), expand = c(0,0)) +
+  theme_minimal() 
+
+```
+
+#### **Part 3: Graph and Table**
+```{r, fig.cap = "Figure 1: Displays the annual count and average weight in both male and female snowshoe hares from the Bonanza Creek LTER from 1998 to 2012. 3380 observations were collected over the course of the study but only 2987 are depicted on the graph. Data not included contains individuals that were captured whose sex was not recorded or was unknown. "}
+grid.arrange(graph1, graph2, ncol=1)
+```
+
+**Discussion:**
+
+The findings of this survey show a consistent trend that has been documented in previous studies (O’Donoghue, M. & Krebs, 1992; Belovsky, 1984) where snowshoe hares operate on a ten year population cycle. The population crashed in 2002 from a high in 1999, it then reached a new high in 2009 before crashing in 2012 again. Both genders follow this trend across years. While males have a relatively consistent weight, the females have a low mean weight in 2002, which may indicate a reason for why the population crashed. Lower physical health, interpreted by birth weight, may have resulted in lower birth rates. As female weights rebounded, the counts of snowshoe hares also increased, indicating that the health of female hares may be critical to maintaining snowshoe hare populations. 
+
+```{r, include = FALSE}
+#Now it is time for the summary statistics 
+
+hare_summary <- hare_tidy %>% 
+  group_by(year) %>% 
+  summarize(
+    mean_weight = mean(weight, na.rm = TRUE),
+    sd_weight = sd(weight, na.rm = TRUE),
+    sample_size = n(),
+    se_weight = sd(weight, na.rm = TRUE) / sqrt(n()),
+    var_weight = var(weight, na.rm = TRUE)
+    )
+#good table, going to now make it a pretty table for display 
+
+
+```
+
+```{r}
+#data table 
+
+datatable(hare_summary, colnames= c('Year', 'Mean Weight (g)', 'Weigt Standard Deviation', 
+                             'Sample Size', 'Weight Standard Error', 'Weight Variance'),
+               caption = 'This table shows summary statistics of the weight in grams of snowshow hares from the Bonanza Creek LTER from different years starting in 1999 and ending in 2012.',
+               options = list(pageLength =8, dom ='tip', digits=2),
+               rownames = FALSE) %>% 
+            formatRound(columns = c('mean_weight','sd_weight', 'se_weight', 'var_weight'), digits=2)
+
+```
+The table above shows the mean weight of all snowshoe hares in the Bonanza Creek LTER from 1998 - 2012 by year. The population in 1998 had the largest mean weight, and declined to its lowest point in 2002, this also corresponds with the ten year cycle that was documented earlier. By 2004, the population had reached a rough equilibrium of mean weight, oscilating between roughly 1350g  and 1450g annually. The variance in the population is also extremely high indicating that it may be difficult to extrapolate too much from the results of this study with respect to body weight. 
+
+#### **Citations**
+
+- 1)O’Donoghue, M. & Krebs, C. J. Effects of Supplemental Food on Snowshoe Hare Reproduction and Juvenile Growth at a Cyclic Population Peak. Journal of Animal Ecology 61, 631–641 (1992).
+
+- 2)Belovsky, G. E. Snowshoe hare optimal foraging and its implications for population dynamics. Theoretical Population Biology 25, 235–264 (1984).
+
+- 3)Kielland, K., Chapin, F. S., Ruess, R. W. & Bonanza Creek LTER. Snowshoe hare physical data in Bonanza Creek Experimental Forest: 1999-Present. (2017) doi:10.6073/PASTA/03DCE4856D79B91557D8E6CE2CBCDC14.
+
+
+
+
+
+
+
+
+
+
+

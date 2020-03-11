@@ -1,0 +1,122 @@
+---
+title: "Part 2"
+author: "Me"
+date: "2/18/2020"
+output: html_document
+---
+## **TASK 2**
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(lubridate)
+library(paletteer)
+library(tsibble)
+library(fable)
+library(fabletools)
+library(feasts)
+library(forecast)
+```
+### **Introduction:** 
+This data was provided by the Columbia Basin Research DART, which is affiliated with the University of Washington [1]. The data set goes back to 1939 and shows the daily record of the number of steelhead salmon that have passed through the Bonneville Dam which was built across the Columbia River that seperates Oregon and Washington. The Bonneville Dam has a fish ladder that was constructed in 1937 which has helped facilitate migration of steelhead salmon and other salmon species back to their spawning grounds. [2]
+
+![Source: Lyn Topinka, 2005.](bonneville_dam.jpg)
+
+```{r, include=FALSE}
+salmon_data <- read_csv("cbr_fish_passage_bonneville_allyrs_steelhead.csv") %>% 
+  janitor::clean_names()
+```
+
+```{r}
+#start by tidying and cleaning up the data set, getting dates into different columns, combing for one aggregate date column, and parsing out each column separately to work in tsibble with
+
+salmon_clean <- salmon_data %>% 
+  unite("ydm", year:mm_dd, sep = "-", remove=FALSE) %>% 
+  mutate(yr_mon_day = parse_date_time(ydm, "ydm")) %>% 
+  mutate(yr_mon = parse_date_time(ydm, "ym")) %>% 
+  mutate(month = month(yr_mon_day, label = TRUE)) %>% 
+  mutate(year = year(yr_mon_day)) %>% 
+  mutate(day = day(yr_mon_day)) %>% 
+  mutate(value = as.numeric(value)) 
+
+
+```
+
+```{r, include = FALSE}
+#alright, now time to create the different time series data frames 
+
+#first A finalized time series plot of the original observations (daily data)
+
+salmon_daily <- ggplot(data = salmon_clean, aes(x = ydm, y = value, group = year)) +
+  geom_line(aes(color = month)) + 
+  theme_minimal()
+
+salmon_daily + scale_color_paletteer_d(("palettetown::alakazam"))
+
+#this graph makes me want to throw up, I am going to cut down the time frame 
+
+```
+
+```{r}
+#second attempt at the daily graph
+daily_df <- salmon_clean %>% 
+  filter(year %in% c("2019"))
+```
+
+
+```{r}
+
+
+#create a dataframe that has monthly counts
+month_df <- salmon_clean %>% 
+  group_by(year, month) %>% 
+  summarize(
+    month_count = sum(value)
+  )
+
+month_graph <- ggplot(month_df, aes(x = year, y = month_count)) +
+  geom_line(aes(color = month),
+            size = 1.2,
+            alpha = 0.8) +
+  labs(
+    title = "Monthly Steelhead Salmon Count at Bonneville Dam",
+    subtitle = "Collected from 1939 - 2019",
+    x = "Year",
+    y = "# of Steelhead Salmon"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 250000)) +
+  scale_x_continuous(limits = c(1939, 2019))
+
+month_graph + scale_color_paletteer_d(("rcartocolor::Antique"))
+
+```
+
+```{r}
+#annual counts
+
+annual_df <- salmon_clean %>% 
+  group_by(year) %>% 
+  summarize(
+    annual_count = sum(value, na.rm = TRUE)
+  )
+
+annual_graph <- ggplot(annual_df, aes(x = year, y = annual_count)) +
+  geom_line(size = 1.2,
+            color = "darkred") +
+  labs(
+    title = "Annual Steelhead Salmon Count at Bonneville Dam",
+    subtitle = "Collected from 1939 - 2019",
+    x = "Year",
+    y = "# of Steelhead Salmon"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 650000)) +
+  scale_x_continuous(limits = c(1939, 2019))
+
+annual_graph
+```
+
+

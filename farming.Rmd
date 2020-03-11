@@ -1,0 +1,109 @@
+---
+title: "PCA"
+author: "Peter Omasta"
+date: "2/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+#attach packages
+library(tidyverse)
+library(janitor)
+library(here)
+library(kableExtra)
+library(sf)
+library(naniar)
+library(ggfortify)
+library(lubridate)
+library(data.table)
+library(DT)
+library(gridExtra)
+library(knitr)
+```
+
+#### **Introduction:** 
+
+This data set was created by @zander_venter and was acquired through the Google Earth Engine [1], it is a data set that examines various environmental and climactic variables on a country level. For this analysis, we are looking specifically at the data related to cropland cover and climatic variables related to weather (namely precipitaion and temperature). In order to find which variables were associated with the amount of cropland that was present in a country, a primary component analysis was conducted. 
+
+![Source: Vladyslav Danilin.](rice_farm.jpg){width=800px}
+
+```{r, include = FALSE}
+#starting off with loading in the necessary data frames 
+
+world_env <- read_csv("world_env_vars.csv") %>% 
+  clean_names()
+
+#remove antarctica which has all NA values 
+world_env <- world_env[-4, ]
+
+```
+
+
+```{r, include = FALSE}
+#now time to run the pca analysis, see if we can find something interesting, first will create the data subset to do that
+
+world_sub <- world_env %>% 
+  select(cropland_cover, temp_mean_annual, temp_max_warmest_month,
+         temp_min_coldest_month, rain_mean_annual, rain_driest_month,
+         rain_wettest_month, elevation, isothermality)
+
+#now time to run the PCa analysis
+
+#pca_world <- prcomp(world_sub, scale=TRUE) was #'d out because it was resulting in an error 
+
+#got an error, will explore where
+
+gg_miss_var(world_sub)
+
+#will use tidyr::drop_na() to allow for analysis
+
+world_nona <- world_sub %>% 
+  drop_na()
+
+#only 9 rows removed, so data set is still fairly large and intact to allow for the analysis
+```
+
+```{r, include = FALSE}
+#now that the data is tidy, time to run the pca analysis
+
+world_pca <- prcomp(world_nona, scale= TRUE)
+
+#look at the pca analysis 
+summary(world_pca)
+plot(world_pca)
+```
+
+```{r, include = FALSE}
+#yay last part which is creating a bi plot for this data
+biplot(world_pca)
+
+#nope that is very ugly, will clean this up using ggfortify
+```
+
+#### **PCA Biplot** 
+```{r, echo= FALSE, warning=FALSE, fig.cap="Figure 1: Principal component analysis (PCA) of environmental and climactic variables. The axes of the PCA explain 71.86% of the variance present in the data set. The length of each line indicates the variance described by that value (longer length = greater variance) while the angle between two lines details how correlated the variables are (0 degrees is a correlation of 1, 90 degress is a correlation of 0, 180 degrees is a correlation of -1.) "}
+world_biplot <- autoplot(world_pca,
+                         colour = NA,
+                         loadings.label = TRUE,
+                         loadings.label.size = 3,
+                         loadings.label.colour = "black",
+                         loadings.label.repel = TRUE) +
+  theme_minimal()
+
+world_biplot
+```
+
+#### **Summary**
+- Elevation and cropland cover are highly correlated, indicating that countries with a more mountainous terrain (higher elevation) have less available arable land for crop production. 
+
+- Cropland cover and elevation were also negatively correlated with mean annual temperatures and the coldest monthly temperatures. While not surprising that cold weather and average temperatures are negatively correlated with cropland cover, elevation was surprising as areas high in elevation tend to have cooler weather. 
+
+- Precipitation variables (mean annual rainfall, driest month, and wettest month) all seemed to have very little to no correlation with the amount of cropland cover, which is surprising given that typically rainfall can be very beneficial to agricultural systems. 
+
+
+
+#### **Citations**
+- 1) Google Earth Engine. https://earthengine.google.com.
+

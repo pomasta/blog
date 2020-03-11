@@ -1,0 +1,8 @@
+name: "Peter Omasta's Blog"
+navbar:
+  title: "My Blog"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
