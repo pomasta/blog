@@ -5,10 +5,10 @@ navbar:
     - text: "Home"
       href: index.html
     - text: "Snowshoe Hares"
-      href: Hares.html
+      href: hares.html
     - text: "Bonneville Dam"
-      href: Bonneville.html
+      href: bonneville.html
     - text: "Hawaiian Maps"
       href: hawaii.html
     - text: "Farming"
-      href: Farming.html
+      href: farming.html

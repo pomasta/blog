@@ -95,6 +95,8 @@ tm_shape(land_clean) +
 #much better
 ```
 The map above shows the different land cover types that have been changed to accomodate human use. Land use types include land that has been converted for human habitation (Residential), agriculture (Cropland and Pastureland, Orchards, etc.) and industrial (Industrial, Strip Mines, etc.) 
+
+
 ### **Watersheds**
 
 ```{r, include=FALSE}
